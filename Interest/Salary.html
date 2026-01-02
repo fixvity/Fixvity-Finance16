@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salary Calculator</title>
 
 <style>
@@ -16,64 +16,77 @@
   --radius:14px;
   --shadow:0 10px 30px rgba(0,0,0,.08);
 }
+
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Inter,system-ui,Arial;
   background:var(--bg);
   color:var(--text);
 }
+
 h1{
   text-align:center;
   margin:22px 0;
   color:var(--primary);
 }
+
 .container{
   max-width:1100px;
   margin:auto;
   padding:16px;
 }
+
 .grid{
   display:grid;
   grid-template-columns:420px 1fr;
   gap:24px;
+  align-items:stretch;
 }
+
 .card{
   background:var(--card);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   padding:22px;
+  display:flex;
+  flex-direction:column;
 }
+
 .section{
   margin-bottom:18px;
 }
+
 .section h3{
   margin:0 0 10px;
-  color:var(--primary);
   font-size:16px;
+  color:var(--primary);
 }
+
 label{
-  font-size:13px;
+  font-size:12px;
   color:var(--muted);
   display:block;
   margin-bottom:4px;
 }
+
 input,select{
   width:100%;
-  padding:12px;
+  padding:10px;
   border-radius:10px;
   border:1px solid var(--border);
   font-size:14px;
-  margin-bottom:12px;
 }
+
 button{
-  width:100%;
   padding:14px;
   border:none;
   border-radius:12px;
   font-weight:600;
   cursor:pointer;
 }
+
 .primary{background:var(--primary);color:#fff}
 .secondary{background:#eef2ff;margin-top:10px}
 
@@ -82,140 +95,151 @@ button{
   grid-template-columns:repeat(3,1fr);
   gap:14px;
 }
+
 .result-box{
   background:#f8fafc;
   border-radius:12px;
   padding:16px;
   text-align:center;
 }
+
 .result-box b{
   font-size:20px;
   display:block;
 }
+
 .result-box small{
   font-size:12px;
   color:var(--muted);
+}
+
+.print-btn{
+  margin-top:18px;
+  background:#0f172a;
+  color:#fff;
 }
 
 @media(max-width:900px){
   .grid{grid-template-columns:1fr}
   .results{grid-template-columns:repeat(2,1fr)}
 }
+
+/* PRINT MODE */
+@media print{
+  body{background:#fff}
+  .section, .primary, .secondary, .print-btn{display:none}
+  .card{box-shadow:none;border:1px solid #ccc}
+}
 </style>
 </head>
 
 <body>
+
 <h1>💼 Salary Calculator</h1>
 
 <div class="container">
 <div class="grid">
 
-<!-- INPUT -->
+<!-- LEFT PANEL -->
 <div class="card">
+
 <div class="section">
 <h3>Salary Type</h3>
 <label>Pay Basis</label>
-<select id="type">
+<select id="payType">
   <option value="hourly">Hourly</option>
   <option value="daily">Daily</option>
   <option value="weekly">Weekly</option>
   <option value="monthly">Monthly</option>
   <option value="annual" selected>Annual</option>
 </select>
+</div>
 
+<div class="section">
 <label>Salary Amount</label>
 <input id="salary" value="60000">
 </div>
 
 <div class="section">
 <h3>Work Schedule</h3>
+
 <label>Hours per Day</label>
-<input id="hours" value="8">
+<input id="hoursDay" value="8">
 
 <label>Days per Week</label>
-<input id="days" value="5">
+<input id="daysWeek" value="5">
 
 <label>Weeks per Year</label>
-<input id="weeks" value="52">
+<input id="weeksYear" value="52">
 </div>
 
 <div class="section">
 <h3>Tax & Deductions</h3>
 <label>Tax Rate (%)</label>
-<input id="tax" value="20">
+<input id="taxRate" value="20">
 </div>
 
 <button class="primary" onclick="calculate()">Calculate Salary</button>
 <button class="secondary" onclick="location.reload()">Reset</button>
+
 </div>
 
-<!-- OUTPUT -->
+<!-- RIGHT PANEL -->
 <div class="card">
+
 <div class="results">
-  <div class="result-box">
-    <b id="annual">$0</b>
-    <small>Annual</small>
-  </div>
-  <div class="result-box">
-    <b id="monthly">$0</b>
-    <small>Monthly</small>
-  </div>
-  <div class="result-box">
-    <b id="weekly">$0</b>
-    <small>Weekly</small>
-  </div>
-  <div class="result-box">
-    <b id="daily">$0</b>
-    <small>Daily</small>
-  </div>
-  <div class="result-box">
-    <b id="hourly">$0</b>
-    <small>Hourly</small>
-  </div>
-  <div class="result-box">
-    <b id="net">$0</b>
-    <small>Net (After Tax)</small>
-  </div>
+  <div class="result-box"><b id="annual">–</b><small>Annual</small></div>
+  <div class="result-box"><b id="monthly">–</b><small>Monthly</small></div>
+  <div class="result-box"><b id="weekly">–</b><small>Weekly</small></div>
+  <div class="result-box"><b id="daily">–</b><small>Daily</small></div>
+  <div class="result-box"><b id="hourly">–</b><small>Hourly</small></div>
+  <div class="result-box"><b id="net">–</b><small>Net (After Tax)</small></div>
 </div>
+
+<button class="print-btn" onclick="window.print()">🖨 Print Salary Summary</button>
+
 </div>
 
 </div>
 </div>
 
 <script>
-const money = n => "$" + Math.round(n).toLocaleString();
+function money(n){
+  return "$" + n.toLocaleString(undefined,{maximumFractionDigits:0});
+}
 
 function calculate(){
-  const type = document.getElementById("type").value;
-  const salary = +document.getElementById("salary").value;
-  const hours = +document.getElementById("hours").value;
-  const days = +document.getElementById("days").value;
-  const weeks = +document.getElementById("weeks").value;
-  const taxRate = +document.getElementById("tax").value / 100;
+  const payType=document.getElementById("payType").value;
+  const salary=+document.getElementById("salary").value;
+  const hpd=+document.getElementById("hoursDay").value;
+  const dpw=+document.getElementById("daysWeek").value;
+  const wpy=+document.getElementById("weeksYear").value;
+  const tax=+document.getElementById("taxRate").value/100;
 
   let annual;
 
-  if(type==="hourly") annual = salary * hours * days * weeks;
-  if(type==="daily") annual = salary * days * weeks;
-  if(type==="weekly") annual = salary * weeks;
-  if(type==="monthly") annual = salary * 12;
-  if(type==="annual") annual = salary;
+  if(payType==="hourly") annual=salary*hpd*dpw*wpy;
+  if(payType==="daily") annual=salary*dpw*wpy;
+  if(payType==="weekly") annual=salary*wpy;
+  if(payType==="monthly") annual=salary*12;
+  if(payType==="annual") annual=salary;
 
-  const monthly = annual / 12;
-  const weekly = annual / weeks;
-  const daily = weekly / days;
-  const hourly = daily / hours;
-  const net = annual * (1 - taxRate);
+  const monthly=annual/12;
+  const weekly=annual/wpy;
+  const daily=annual/(wpy*dpw);
+  const hourly=annual/(wpy*dpw*hpd);
+  const net=annual*(1-tax);
 
-  document.getElementById("annual").textContent = money(annual);
-  document.getElementById("monthly").textContent = money(monthly);
-  document.getElementById("weekly").textContent = money(weekly);
-  document.getElementById("daily").textContent = money(daily);
-  document.getElementById("hourly").textContent = money(hourly);
-  document.getElementById("net").textContent = money(net);
+  document.getElementById("annual").textContent=money(annual);
+  document.getElementById("monthly").textContent=money(monthly);
+  document.getElementById("weekly").textContent=money(weekly);
+  document.getElementById("daily").textContent=money(daily);
+  document.getElementById("hourly").textContent=money(hourly);
+  document.getElementById("net").textContent=money(net);
 }
 
 calculate();
 </script>
+
 </body>
 </html>
