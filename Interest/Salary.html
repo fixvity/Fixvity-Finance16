@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional Salary Calculator</title>
+<title>Salary Calculator</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -15,8 +15,8 @@
   --text:#0f172a;
   --muted:#64748b;
   --border:#e5e7eb;
-  --radius:16px;
-  --shadow:0 12px 30px rgba(0,0,0,.08);
+  --radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box}
 body{
@@ -37,72 +37,74 @@ h1{
 }
 .grid{
   display:grid;
-  grid-template-columns:420px 1fr;
-  gap:26px;
+  grid-template-columns:380px 1fr;
+  gap:24px;
 }
 .card{
   background:var(--card);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:24px;
+  padding:22px;
 }
-.section{
-  margin-bottom:18px;
-}
+.section{margin-bottom:18px}
 .section h3{
   margin:0 0 10px;
-  color:var(--primary);
   font-size:16px;
+  color:var(--primary);
 }
 label{
-  font-size:13px;
+  font-size:12px;
   color:var(--muted);
-  margin-bottom:4px;
   display:block;
+  margin-bottom:4px;
 }
 input,select{
   width:100%;
-  padding:11px;
-  border-radius:12px;
+  padding:10px;
+  border-radius:10px;
   border:1px solid var(--border);
   font-size:14px;
 }
 button{
   padding:14px;
   border:none;
-  border-radius:14px;
+  border-radius:12px;
   font-weight:600;
   cursor:pointer;
 }
 .primary{background:var(--primary);color:#fff}
-.secondary{background:#eef2ff;margin-top:10px}
+.secondary{background:#eef2ff;margin-left:10px}
 
 .results{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:14px;
+  margin-bottom:20px;
 }
-.result{
+.result-box{
   background:#f8fafc;
-  border-radius:14px;
-  padding:16px;
+  border-radius:12px;
+  padding:14px;
   text-align:center;
 }
-.result b{
-  display:block;
+.result-box b{
   font-size:18px;
+  display:block;
 }
-.result small{
+.result-box small{
+  font-size:12px;
   color:var(--muted);
 }
 
 .chart-wrap{
-  margin-top:20px;
-  height:300px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:320px;
 }
 
 .print-btn{
-  margin-top:18px;
+  margin-top:20px;
   background:#0f172a;
   color:#fff;
   width:100%;
@@ -111,12 +113,18 @@ button{
 @media(max-width:900px){
   .grid{grid-template-columns:1fr}
   .results{grid-template-columns:repeat(2,1fr)}
+  .chart-wrap{height:260px}
+}
+
+@media print{
+  body{background:#fff}
+  .section,button{display:none}
+  .card{box-shadow:none}
 }
 </style>
 </head>
 
 <body>
-
 <h1>💼 Salary Calculator</h1>
 
 <div class="container">
@@ -124,17 +132,27 @@ button{
 
 <!-- LEFT -->
 <div class="card">
+
+<div class="section">
+<h3>Currency</h3>
+<select id="currency">
+  <option value="$">USD ($)</option>
+  <option value="€">EUR (€)</option>
+  <option value="£">GBP (£)</option>
+  <option value="₹">INR (₹)</option>
+</select>
+</div>
+
 <div class="section">
 <h3>Salary Type</h3>
 <label>Pay Basis</label>
 <select id="basis">
-  <option value="hourly">Hourly</option>
-  <option value="daily">Daily</option>
-  <option value="weekly">Weekly</option>
+  <option value="annual">Annual</option>
   <option value="monthly">Monthly</option>
-  <option value="annual" selected>Annual</option>
+  <option value="weekly">Weekly</option>
+  <option value="daily">Daily</option>
+  <option value="hourly">Hourly</option>
 </select>
-
 <label style="margin-top:10px">Salary Amount</label>
 <input id="amount" value="60000">
 </div>
@@ -157,24 +175,27 @@ button{
 
 <button class="primary" onclick="calculate()">Calculate Salary</button>
 <button class="secondary" onclick="location.reload()">Reset</button>
+
 </div>
 
 <!-- RIGHT -->
 <div class="card">
+
 <div class="results">
-  <div class="result"><b id="annual">$0</b><small>Annual</small></div>
-  <div class="result"><b id="monthly">$0</b><small>Monthly</small></div>
-  <div class="result"><b id="weekly">$0</b><small>Weekly</small></div>
-  <div class="result"><b id="daily">$0</b><small>Daily</small></div>
-  <div class="result"><b id="hourly">$0</b><small>Hourly</small></div>
-  <div class="result"><b id="net">$0</b><small>Net (After Tax)</small></div>
+  <div class="result-box"><b id="annual">–</b><small>Annual</small></div>
+  <div class="result-box"><b id="monthly">–</b><small>Monthly</small></div>
+  <div class="result-box"><b id="weekly">–</b><small>Weekly</small></div>
+  <div class="result-box"><b id="daily">–</b><small>Daily</small></div>
+  <div class="result-box"><b id="hourly">–</b><small>Hourly</small></div>
+  <div class="result-box"><b id="net">–</b><small>Net (After Tax)</small></div>
 </div>
 
 <div class="chart-wrap">
-<canvas id="pie"></canvas>
+  <canvas id="pie"></canvas>
 </div>
 
-<button class="print-btn" onclick="window.print()">🖨️ Print Salary Summary</button>
+<button class="print-btn" onclick="window.print()">🖨 Print Salary Summary</button>
+
 </div>
 
 </div>
@@ -183,62 +204,62 @@ button{
 <script>
 let pie;
 
-function money(n){
-  return "$"+n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,",");
+function money(v){
+  const s=document.getElementById("currency").value;
+  return s+Math.round(v).toLocaleString();
 }
 
 function calculate(){
-  const basis=document.getElementById("basis").value;
-  const amount=+document.getElementById("amount").value;
-  const hours=+document.getElementById("hours").value;
-  const days=+document.getElementById("days").value;
-  const weeks=+document.getElementById("weeks").value;
-  const taxRate=+document.getElementById("tax").value/100;
+const amount=+document.getElementById("amount").value;
+const basis=document.getElementById("basis").value;
+const h=+hours.value,d=+days.value,w=+weeks.value;
+const tax=+document.getElementById("tax").value/100;
 
-  let annual=0;
+let annual;
+if(basis==="annual") annual=amount;
+if(basis==="monthly") annual=amount*12;
+if(basis==="weekly") annual=amount*w;
+if(basis==="daily") annual=amount*d*w;
+if(basis==="hourly") annual=amount*h*d*w;
 
-  if(basis==="hourly") annual=amount*hours*days*weeks;
-  if(basis==="daily") annual=amount*days*weeks;
-  if(basis==="weekly") annual=amount*weeks;
-  if(basis==="monthly") annual=amount*12;
-  if(basis==="annual") annual=amount;
+const monthly=annual/12;
+const weekly=annual/w;
+const daily=annual/(d*w);
+const hourly=annual/(h*d*w);
 
-  const monthly=annual/12;
-  const weekly=annual/weeks;
-  const daily=weekly/days;
-  const hourly=daily/hours;
+const net=annual*(1-tax);
+const taxAmt=annual-net;
 
-  const tax=annual*taxRate;
-  const net=annual-tax;
+annualEl.textContent=money(annual);
+monthlyEl.textContent=money(monthly);
+weeklyEl.textContent=money(weekly);
+dailyEl.textContent=money(daily);
+hourlyEl.textContent=money(hourly);
+netEl.textContent=money(net);
 
-  document.getElementById("annual").textContent=money(annual);
-  document.getElementById("monthly").textContent=money(monthly);
-  document.getElementById("weekly").textContent=money(weekly);
-  document.getElementById("daily").textContent=money(daily);
-  document.getElementById("hourly").textContent=money(hourly);
-  document.getElementById("net").textContent=money(net);
-
-  if(pie) pie.destroy();
-  pie=new Chart(document.getElementById("pie"),{
-    type:"pie",
-    data:{
-      labels:["Net Pay","Tax"],
-      datasets:[{
-        data:[net,tax],
-        backgroundColor:["#2563eb","#ef4444"]
-      }]
-    },
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{position:"bottom"}
-      }
-    }
-  });
+if(pie)pie.destroy();
+pie=new Chart(pieEl,{
+  type:"pie",
+  data:{
+    labels:["Net Pay","Tax"],
+    datasets:[{
+      data:[net,taxAmt],
+      backgroundColor:["#2563eb","#ef4444"]
+    }]
+  },
+  options:{responsive:true}
+});
 }
+
+const annualEl=document.getElementById("annual");
+const monthlyEl=document.getElementById("monthly");
+const weeklyEl=document.getElementById("weekly");
+const dailyEl=document.getElementById("daily");
+const hourlyEl=document.getElementById("hourly");
+const netEl=document.getElementById("net");
+const pieEl=document.getElementById("pie");
 
 calculate();
 </script>
-
 </body>
 </html>
